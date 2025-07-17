@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: Finch-runner  
+    runs-on: neofund runner  
 
     steps:
       - name: Print Docker Compose Version
