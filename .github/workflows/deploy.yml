@@ -1,35 +1,35 @@
-name: Deploy Docker Compose App
+name: Deploy NeoFund App
 
 on:
   push:
-    branches: [main]  # Triggers on push to 'dev' branch
+    branches: [main]  # Trigger deployment on push to main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Print Docker Compose Version
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Add SSH Key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Deploy to EC2 via SSH
         run: |
-          sudo docker-compose --version
+          ssh -o StrictHostKeyChecking=no ubuntu@13.215.251.52 << 'EOF'
+            cd ~/NeoFund || git clone https://github.com/shilemon/NeoFund.git && cd NeoFund
 
-      - name: Checkout Code and Deploy App
-        run: |
-          cd /home/ubuntu/NeoFund
-          # Ensure you're on the dev branch
-          git stash || true
-          git fetch origin
-          git checkout dev
-          git pull origin dev
+            git stash || true
+            git fetch origin
+            git checkout main
+            git pull origin main
 
-          # Go to project root (where docker-compose.yaml is located)
-          cd ..
+            sudo docker-compose down
+            sudo docker-compose up -d --build
 
-          # Build and start the app
-          sudo docker-compose up -d --build
-
-          # Clean up unused images
-          sudo docker image prune -f
-
-          # Show running containers
-          sudo docker ps
+            sudo docker image prune -f
+            sudo docker ps
+          EOF
