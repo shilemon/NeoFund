@@ -19,9 +19,10 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@<13.215.251.52> << 'EOF'
+        ssh -o StrictHostKeyChecking=no ec2-user@13.215.251.52 << 'EOF'
           cd /home/ec2-user/neofund || git clone https://github.com/shilemon/NeoFund.git neofund && cd neofund
           git pull origin main
           docker-compose down
           docker-compose up -d --build
         EOF
+
