@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: neofund runner  
+    runs-on: ubuntu-latest 
 
     steps:
       - name: Print Docker Compose Version
